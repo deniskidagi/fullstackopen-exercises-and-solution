@@ -3,12 +3,14 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import personService from './services/Persons'
+import Notifications from './components/Notifications'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [number, setNumber] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
+  const [successMessage, setSuccessMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -32,7 +34,13 @@ const App = () => {
         personService
         .update(id, nameObject)
         .then(response => {
+          const successJob = `${nameObject.name} phone number updated successfully`
+          setSuccessMessage(successJob)
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 2000)
           setPersons(persons.map(person => person.id !== id ? person : response));
+
         })
         setNewName('')
         setNumber('')
@@ -44,6 +52,11 @@ const App = () => {
       personService
       .create(nameObject)
       .then(response => {
+        const successJob = `${nameObject.name} added successfully`
+        setSuccessMessage(successJob)
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 2000)
         setPersons(persons.concat(response))
         setNewName('')
         setNumber('')
@@ -73,6 +86,20 @@ const App = () => {
       personService
       .deleteUser(id)
       .then(response => {
+        const successJob = `${personToDelete.name} deleted successfully`
+        setSuccessMessage(successJob)
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 2000)
+        const unfilteredusers = persons.filter(person => person.id !== id)
+        setPersons(unfilteredusers)
+      })
+      .catch(err => {
+        const failedJob = `${personToDelete.name} does not exist`
+        setSuccessMessage(failedJob)
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 2000)
         const unfilteredusers = persons.filter(person => person.id !== id)
         setPersons(unfilteredusers)
       })
@@ -82,6 +109,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notifications message={successMessage}/>
       <Filter handleChange={filterUsers}/>
       <h1>Add New</h1>
 
