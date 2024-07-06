@@ -1,11 +1,19 @@
+
 const http = require('http');
 const express = require('express')
 const cors = require('cors')
 const app = express()
+const dotenv = require('dotenv')
+dotenv.config()
 
 app.use(express.json())
 app.use(cors())
 app.use(express.static('dist'))
+
+
+const Note = require('./models/note')
+
+
 
 let notes = [
     {
@@ -38,37 +46,33 @@ const generateId = () => {
 }
 app.post('/api/notes', (request, response) => {
   const body = request.body
-  if(!body.content){
+  if(body.content === undefined){
     return response.status(404).json({
       error: "Content missing"
     })
   }
 
-  const note = {
-    content: content.body,
-    important: Boolean(body.important) || false,
-    id: generateId()
-  }
-  notes = notes.concat(note)
-
-  response.json(note)
+  const note = new Note({
+    content: body.content,
+    important: body.important || false,
+  }) 
+  note.save().then(savedNote => {
+    response.json(savedNote)
+  })
 })
 
 
 
 
 app.get('/api/notes', (request, response) => {
-  response.json(notes)
+  Note.find({}).then(notes => {
+    response.json(notes)
+  })
 })
 
 app.get('/api/notes/:id', (request, response) => {
   const id = request.params.id;
-  const note = notes.find(note => note.id === id)
-  if(note){
-    response.json(notes)
-  } else {
-    response.status(404).end()
-  }
+  Note.findById(id).then(note => response.json(note))
 })
 
 app.delete('/api/notes/:id', (request, response) => {
@@ -77,7 +81,7 @@ app.delete('/api/notes/:id', (request, response) => {
   response.status(404).end()
 })
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`server running on port ${PORT}`);
 })
