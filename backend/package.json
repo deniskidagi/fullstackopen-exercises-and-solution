@@ -21,7 +21,10 @@
     "mongoose": "^8.4.4"
   },
   "devDependencies": {
+    "@eslint/js": "^9.6.0",
     "@flydotio/dockerfile": "^0.5.7",
+    "eslint": "^9.6.0",
+    "globals": "^15.8.0",
     "nodemon": "^3.1.4"
   }
 }
