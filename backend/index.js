@@ -12,7 +12,7 @@ app.use(express.static('dist'))
 
 const Note = require('./models/note');
 
-app.post('/api/notes', (request, response) => {
+app.post('/api/notes', (request, response, next) => {
   const body = request.body
   if(body.content === undefined){
     return response.status(404).json({
@@ -26,6 +26,7 @@ app.post('/api/notes', (request, response) => {
   note.save().then(savedNote => {
     response.json(savedNote)
   })
+  .catch(error => next(error))
 })
 
 
@@ -63,16 +64,14 @@ app.put('/api/notes/:id', (request, response, next) => {
     content: body.content,
     important: body.important
   }
-  Note.findByIdAndUpdate(request.params.id, note, {new: true})
+  Note.findByIdAndUpdate(request.params.id, 
+    {content, important},
+    {new: true, runVallidators: true, context: 'query'})
   .then(updatedNote => {
     response.json(updatedNote)
   })
   .catch(error => next(error))
 })
-
-
-
-
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {

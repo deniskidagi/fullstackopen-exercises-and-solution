@@ -11,28 +11,28 @@ app.use(express.static('dist'))
 const Phone = require('./models/phone')
 
 let contacts =
-[
-    { 
-      "id": "1",
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": "2",
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": "3",
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": "4",
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-]
+// [
+//     { 
+//       "id": "1",
+//       "name": "Arto Hellas", 
+//       "number": "040-123456"
+//     },
+//     { 
+//       "id": "2",
+//       "name": "Ada Lovelace", 
+//       "number": "39-44-5323523"
+//     },
+//     { 
+//       "id": "3",
+//       "name": "Dan Abramov", 
+//       "number": "12-43-234345"
+//     },
+//     { 
+//       "id": "4",
+//       "name": "Mary Poppendieck", 
+//       "number": "39-23-6423122"
+//     }
+// ]
 // morgan.token('type', (req, res) => {
 //     return JSON.stringify(req.body)
 // })
@@ -51,13 +51,12 @@ app.get('/api/persons', (request, response) => {
 })
 app.get('/api/persons/:id', (request, response) => {
     const id = request.params.id
-    Phone.findById().then(response => response.json())
+    Phone.findById(id).then(response => response.json())
 })
 
 app.delete('/api/persons/:id', (request, response) => {
     const id = request.params.id
-    const validContacts = contacts.filter(contact => contact.id !== id)
-    response.json(validContacts)
+    Phone.findByIdAndDelete(id).then(result => response.json(result))
 })
 
 
